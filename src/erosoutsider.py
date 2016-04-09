@@ -17,9 +17,11 @@ class ErosOutsiderBase(object):
         raise RuntimeError("This should be overridden!")
 
     def _send_check(self, data):
+        # Only encrypt if we have a key
+        if self.key:
+            map(lambda x: x ^ self.key, data)
         checksum = sum(data) % 256
         data.append(checksum)
-        print data
         return self._send_internal(data)
 
     def _receive(self, length):
@@ -47,18 +49,26 @@ class ErosOutsiderBase(object):
         pass
 
     def perform_handshake(self):
-        # Handshake
+        # TODO throw an exception if we just get a shitload of 0x7. Why does
+        # this box suck so much.
+
+        # Handshake portion
         for i in range(4):
             self._send_internal([0x0])
             check = self._receive(1)[0]
             if check != 0x7:
                 raise ErosOutsiderError("Handshake received 0x%.02x, expected 0x07!" % (check))
-        # Key retreival
-        self._send_check([0x2f, 0x29])
+        # Send our chosen key over
+        #
+        # chosen by fair dice roll (oh fuck it no one cares about your xkcd
+        # joke it's just 0)
+        self._send_check([0x2f, 0x00])
         key_info = self._receive_check(3)
         if key_info[0] != 0x21:
-                raise ErosOutsiderError("Handshake received 0x%.02x, expected 0x21!" % (key_info[0]))
-        self.key = key_info[1]
+            raise ErosOutsiderError("Handshake received 0x%.02x, expected 0x21!" % (key_info[0]))
+
+        # Generate final key here
+        self.key = 0x55 ^ key_info[1]
 
 
 class ErosOutsiderSerial(ErosOutsiderBase):
@@ -78,6 +88,7 @@ class ErosOutsiderSerial(ErosOutsiderBase):
 
     def close(self):
         self.port.close()
+
 
 def main():
     e = ErosOutsiderSerial("/dev/ttyS0")
