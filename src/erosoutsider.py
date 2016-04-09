@@ -6,6 +6,7 @@ class ErosOutsiderError(Exception):
 
 
 class ErosOutsiderBase(object):
+
     def __init__(self):
         "docstring"
         self.key = None
@@ -18,10 +19,10 @@ class ErosOutsiderBase(object):
 
     def _send_check(self, data):
         # Only encrypt if we have a key
-        if self.key:
-            map(lambda x: x ^ self.key, data)
         checksum = sum(data) % 256
         data.append(checksum)
+        if self.key:
+            data = map(lambda x: x ^ self.key, data)
         return self._send_internal(data)
 
     def _receive(self, length):
@@ -42,10 +43,15 @@ class ErosOutsiderBase(object):
             raise ErosOutsiderError("Checksum mismatch! 0x%.02x != 0x%.02x" % (s, checksum))
         return data[:-1]
 
-    def read(self, address):
-        pass
+    def read_sync(self, address):
+        self._send_check([0x3c, address >> 8, address & 0xff])
+        data = self._receive_check(3)
+        return data[1]
 
-    def write(self, address, data):
+    def write_sync(self, address, data):
+        self._send_check([0x3c, address >> 8, address & 0xff, data])
+        data = self._receive_check(3)
+        return data[1]
         pass
 
     def perform_handshake(self):
@@ -53,7 +59,7 @@ class ErosOutsiderBase(object):
         # this box suck so much.
 
         # Handshake portion
-        for i in range(4):
+        for i in range(2):
             self._send_internal([0x0])
             check = self._receive(1)[0]
             if check != 0x7:
@@ -91,12 +97,8 @@ class ErosOutsiderSerial(ErosOutsiderBase):
 
 
 def main():
-    e = ErosOutsiderSerial("/dev/ttyS0")
-    try:
-        e.perform_handshake()
-    except ErosOutsiderError, b:
-        e.close()
-        raise b
+    e = ErosOutsiderSerial("/dev/ttyUSB0")
+    e.perform_handshake()
     e.close()
 
 if __name__ == "__main__":
