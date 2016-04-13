@@ -1,5 +1,5 @@
 import serial
-
+import time
 
 class ErosOutsiderError(Exception):
     pass
@@ -18,9 +18,10 @@ class ErosOutsiderBase(object):
         raise RuntimeError("This should be overridden!")
 
     def _send_check(self, data):
-        # Only encrypt if we have a key
+        # Append checksum before encrypting
         checksum = sum(data) % 256
         data.append(checksum)
+        # Only encrypt if we have a key
         if self.key:
             data = map(lambda x: x ^ self.key, data)
         return self._send_internal(data)
@@ -32,10 +33,7 @@ class ErosOutsiderBase(object):
         return data
 
     def _receive_check(self, length):
-        # decrypt if encrypted
         data = self._receive(length)
-        if self.key:
-            pass
         # Test checksum
         checksum = data[-1]
         s = sum(data[:-1]) % 256
@@ -49,10 +47,9 @@ class ErosOutsiderBase(object):
         return data[1]
 
     def write_sync(self, address, data):
-        self._send_check([0x3c, address >> 8, address & 0xff, data])
-        data = self._receive_check(3)
-        return data[1]
-        pass
+        self._send_check([0x4d, address >> 8, address & 0xff, data])
+        data = self._receive(1)
+        return data[0]
 
     def perform_handshake(self):
         # TODO throw an exception if we just get a shitload of 0x7. Why does
@@ -76,6 +73,46 @@ class ErosOutsiderBase(object):
         # Generate final key here
         self.key = 0x55 ^ key_info[1]
 
+    def glitch_menu(self):
+        # Run these 4 commands then press "Menu", then "Up", menu will glitch
+        # but still be usable.
+
+        # Correct. Do not change
+        # self.write_sync(0x4014, 0x09)
+        # self.write_sync(0x4015, 0x04)
+        # self.write_sync(0x4016, 0x03)
+        # self.write_sync(0x4017, 0x24)
+
+    def press_up_button(self):
+        self.write_sync(0x4069, 0x40)
+
+    def press_down_button(self):
+        self.write_sync(0x4069, 0x40)
+
+    def dump_rom(self):
+        f = open("ram3.bin", "wb")
+        # try:
+        #     self.write_sync(0x4070, 0x0a)
+        #     self.write_sync(0x4014, 0x09)
+        #     self.write_sync(0x4015, 0x04)
+        #     for i in range(0, 65536, 8):
+        #         self.write_sync(0x4016, i >> 8)
+        #         self.write_sync(0x4017, i & 0xff)
+        #         # for i in range(0x4000, 0x4020):
+        #         #     f.write(chr(self.read_sync(i)))
+        #         # raw_input()
+        # except KeyboardInterrupt:
+        #     pass
+        #
+
+        #self.write_sync(0x4070, 0x02)
+        # for i in range(0x4000, 0x4020):
+        #     f.write(chr(self.read_sync(i)))
+        f.close()
+        # f = open("rom.bin", "wb")
+        # for i in range(255):
+        #     f.write(chr(self.read_sync(i)))
+        # f.close()
 
 class ErosOutsiderSerial(ErosOutsiderBase):
     def __init__(self, port):
@@ -99,6 +136,14 @@ class ErosOutsiderSerial(ErosOutsiderBase):
 def main():
     e = ErosOutsiderSerial("/dev/ttyUSB0")
     e.perform_handshake()
+    #e.dump_rom()
+    e.glitch_menu()
+    while True:
+        s = ""
+        for i in range(0x4000, 0x4020):
+            s += "0x%.02x " % (e.read_sync(i))
+        print s
+        raw_input()
     e.close()
 
 if __name__ == "__main__":
