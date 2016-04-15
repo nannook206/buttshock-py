@@ -1,3 +1,5 @@
+
+
 import serial
 
 
@@ -49,23 +51,6 @@ import serial
         #     f.write(chr(self.read_sync(i)))
         # f.close()
 
-class ErosOutsiderSerial(ErosOutsiderBase):
-    def __init__(self, port):
-        "docstring"
-        super(ErosOutsiderSerial, self).__init__()
-        self.port = serial.Serial(port, 19200, timeout=1,
-                                  parity=serial.PARITY_NONE,
-                                  bytesize=8, stopbits=1,
-                                  xonxoff=0, rtscts=0)
-
-    def _send_internal(self, data):
-        return self.port.write(data)
-
-    def _receive_internal(self, length):
-        return self.port.read(length)
-
-    def close(self):
-        self.port.close()
 
 
 def main():
