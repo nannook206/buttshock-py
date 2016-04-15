@@ -99,7 +99,7 @@ class ErosOutsiderBase(object):
         # TODO throw an exception if we just get a shitload of 0x7. Why does
         # this box suck so much.
 
-        # Handshake portion
+        # Handshake. Do it twice, just 'cause.
         for i in range(2):
             self._send_internal([0x0])
             check = self._receive(1)[0]
