@@ -80,10 +80,12 @@ class ErosOutsiderBase(object):
         corresponds to the table in the serial protocol documentation.
 
         """
+        if type(data) is not list:
+            raise ErosOutsiderError("Must receive data as a list!")
         length = len(data)
         if not 0 < length and length <= 8:
             raise ErosOutsiderError("Can only write between 1-8 bytes!")
-        self._send_check([0x4d, address >> 8, address & 0xff, data])
+        self._send_check([0x4d, address >> 8, address & 0xff] + data)
         data = self._receive(1)
         return data[0]
 
