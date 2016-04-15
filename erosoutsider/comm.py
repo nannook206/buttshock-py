@@ -4,16 +4,22 @@
 # protocol.
 
 
+from .base import ErosOutsiderBase
 import serial
 
-class ErosOutsiderSerial(ErosOutsiderBase):
-    """Serial implementation of ErosOutsider protocol.
 
-    If you are looking to talk directly to the box, use this.
+class ErosOutsiderSerialSync(ErosOutsiderBase):
+    """Synchronous serial implementation of ErosOutsider protocol. All read/write
+    calls will block. You have been warned.
+
+    If you are looking to talk directly to the box, use this. At least, until
+    there's an async one. If there is now and I forgot to update this comment,
+    use that.
+
     """
     def __init__(self, port):
         """Initialization function. Follows RAII, so creating the object opens the port."""
-        super(ErosOutsiderSerial, self).__init__()
+        super(ErosOutsiderSerialSync, self).__init__()
         self.port = serial.Serial(port, 19200, timeout=1,
                                   parity=serial.PARITY_NONE,
                                   bytesize=8, stopbits=1,
