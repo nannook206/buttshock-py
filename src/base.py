@@ -64,20 +64,25 @@ class ErosOutsiderBase(object):
             raise ErosOutsiderError("Checksum mismatch! 0x%.02x != 0x%.02x" % (s, checksum))
         return data[:-1]
 
-    def read(self, address):
-        """Read a certain number of bytes from memory at the address given. Address
+    def read(self, address, length):
+        """Read 1-8 bytes from memory at the address given. Address
         corresponds to the table in the serial protocol documentation.
 
         """
+        if not 0 < length and length <= 8:
+            raise ErosOutsiderError("Can only read between 1-8 bytes!")
         self._send_check([0x3c, address >> 8, address & 0xff])
         data = self._receive_check(3)
         return data[1]
 
     def write(self, address, data):
-        """Writes a certain number of bytes to memory at the address given. Address
+        """Write 1-8 bytes to memory at the address given. Address
         corresponds to the table in the serial protocol documentation.
 
         """
+        length = len(data)
+        if not 0 < length and length <= 8:
+            raise ErosOutsiderError("Can only write between 1-8 bytes!")
         self._send_check([0x4d, address >> 8, address & 0xff, data])
         data = self._receive(1)
         return data[0]
