@@ -13,10 +13,7 @@ import erosoutsider
 def main():
     eo = erosoutsider.ErosOutsiderSerialSync("/dev/ttyUSB0")
     eo.perform_handshake()
-    eo.write(0x4014, [0x09])
-    eo.write(0x4015, [0x04])
-    eo.write(0x4016, [0x03])
-    eo.write(0x4017, [0x24])
+    eo.write(0x4014, [0x9, 0x4, 0x3, 0x24])
     eo.close()
 
 if __name__ == "__main__":
