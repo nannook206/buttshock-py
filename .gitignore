@@ -1,0 +1,6 @@
+*.pyc
+*.ropeproject*
+build
+cxdist
+dist
+doc/_build
