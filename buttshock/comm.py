@@ -1,15 +1,15 @@
-# ErosOutsider - Serial Module
+# Buttshock - Serial Module
 #
 # Contains classes for RS-232 implementations of the ET-312 communications
 # protocol.
 
 
-from .base import ErosOutsiderBase
+from .base import ButtshockBase
 import serial
 
 
-class ErosOutsiderSerialSync(ErosOutsiderBase):
-    """Synchronous serial implementation of ErosOutsider protocol. All read/write
+class ButtshockET312SerialSync(ButtshockBase):
+    """Synchronous serial implementation of Buttshock ET-312 protocol. All read/write
     calls will block. You have been warned.
 
     If you are looking to talk directly to the box, use this. At least, until
@@ -19,7 +19,7 @@ class ErosOutsiderSerialSync(ErosOutsiderBase):
     """
     def __init__(self, port):
         """Initialization function. Follows RAII, so creating the object opens the port."""
-        super(ErosOutsiderSerialSync, self).__init__()
+        super(ButtshockSerialSync, self).__init__()
         self.port = serial.Serial(port, 19200, timeout=1,
                                   parity=serial.PARITY_NONE,
                                   bytesize=8, stopbits=1,
@@ -38,5 +38,5 @@ class ErosOutsiderSerialSync(ErosOutsiderBase):
         self.port.close()
 
     def change_baud_rate(self):
-        super(ErosOutsiderSerialSync, self).change_baud_rate()
+        super(ButtshockSerialSync, self).change_baud_rate()
         self.port.baudrate = 38400

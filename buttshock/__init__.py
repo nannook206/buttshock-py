@@ -1,3 +1,3 @@
 __all__ = ["serial", "base"]
-from .base import ErosOutsiderBase, ErosOutsiderError
-from .comm import ErosOutsiderSerialSync
+from .base import ButtshockET312Base, ButtshockError
+from .comm import ButtshockET312SerialSync
