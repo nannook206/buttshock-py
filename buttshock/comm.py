@@ -36,3 +36,7 @@ class ErosOutsiderSerialSync(ErosOutsiderBase):
     def close(self):
         """Close port."""
         self.port.close()
+
+    def change_baud_rate(self):
+        super(ErosOutsiderSerialSync, self).change_baud_rate()
+        self.port.baudrate = 38400

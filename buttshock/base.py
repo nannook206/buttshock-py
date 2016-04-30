@@ -116,3 +116,26 @@ class ErosOutsiderBase(object):
         # Generate final key here. It's usually 0x55 ^ our_key ^ their_key, but
         # since our key is 0, we can shorten it to 0x55 ^ their_key
         self.key = 0x55 ^ key_info[1]
+
+    def change_baud_rate(self):
+        # This will require sending over 2 bytes at the same time, as any
+        # transmission after this will happen at the new baud rate.
+        self.write(0x4029, [0x0c])
+        pass
+
+    def get_baud_rate(self):
+        baud_lh = self.read(0x4029)
+        baud_uh = self.read(0x4020)
+        return ((baud_uh & 0xf) << 0x8) & baud_lh
+
+    def get_stack_ptr(self):
+        return (self.read(0x405E) << 8) | self.read(0x405D)
+
+    def set_stack_ptr(self):
+        return self.write(0x405D, [0x80, 0x01])
+
+    def get_mcucsr(self):
+        return self.read(0x4054)
+
+    def reset_box(self):
+        self.write(0x4070, [0x17])
