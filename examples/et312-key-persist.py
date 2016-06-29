@@ -43,7 +43,7 @@ def main():
     except Exception as e:
         print("Current mode read failed!")
         raise e
-    et312.write(0x4213, [0x0])
+    et312.reset_key()
     et312.close()
 
 if __name__ == "__main__":

@@ -140,3 +140,6 @@ class ButtshockET312Base(object):
 
     def reset_box(self):
         self.write(0x4070, [0x17])
+
+    def reset_key(self):
+        self.write(0x4213, [0x0])
