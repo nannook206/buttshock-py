@@ -39,7 +39,7 @@ class ButtshockET312Base(object):
         data.append(checksum)
         # Only encrypt if we have a key
         if self.key:
-            data = map(lambda x: x ^ self.key, data)
+            data = [x ^ self.key for x in data]
         return self._send_internal(data)
 
     def _receive(self, length):
