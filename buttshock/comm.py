@@ -4,11 +4,11 @@
 # protocol.
 
 
-from .base import ButtshockBase
+from .base import ButtshockET312Base
 import serial
 
 
-class ButtshockET312SerialSync(ButtshockBase):
+class ButtshockET312SerialSync(ButtshockET312Base):
     """Synchronous serial implementation of Buttshock ET-312 protocol. All read/write
     calls will block. You have been warned.
 
@@ -17,9 +17,9 @@ class ButtshockET312SerialSync(ButtshockBase):
     use that.
 
     """
-    def __init__(self, port):
+    def __init__(self, port, key=None, key_file=None):
         """Initialization function. Follows RAII, so creating the object opens the port."""
-        super(ButtshockSerialSync, self).__init__()
+        super().__init__(key, key_file)
         self.port = serial.Serial(port, 19200, timeout=1,
                                   parity=serial.PARITY_NONE,
                                   bytesize=8, stopbits=1,
@@ -38,5 +38,5 @@ class ButtshockET312SerialSync(ButtshockBase):
         self.port.close()
 
     def change_baud_rate(self):
-        super(ButtshockSerialSync, self).change_baud_rate()
+        super().change_baud_rate()
         self.port.baudrate = 38400

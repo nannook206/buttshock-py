@@ -17,11 +17,12 @@ class ButtshockET312Base(object):
     Base class for ET-312 communication. Should be inherited by other classes that
     implement specific communication types, such as RS-232.
     """
-    def __init__(self):
+    def __init__(self, key=None, key_file=None):
         "Initialization function"
         # Set the crypto key to None, since it's used to tell whether or not we
         # should encrypt outgoing messages.
-        self.key = None
+        self.key_file = key_file
+        self.key = key
 
     def _send_internal(self, data):
         """Internal send function, to be implemented by inheritors."""
@@ -46,7 +47,7 @@ class ButtshockET312Base(object):
         not calculate checksum.
 
         """
-        data = map(ord, self._receive_internal(length))
+        data = self._receive_internal(length)
         if len(data) < length:
             raise ButtshockError("Received unexpected length %d, expected %d!" % (len(data), length))
         return data
