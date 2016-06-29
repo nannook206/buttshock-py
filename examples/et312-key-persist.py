@@ -32,12 +32,9 @@ def main():
     et312 = buttshock.ButtshockET312SerialSync(args.serial_port,
                                                key=int(args.key) if args.key else None,
                                                key_file=args.key_file)
-    if not args.key:
-        try:
-            et312.perform_handshake()
-            print("Key is {0:#x} ({0})".format(et312.key, et312.key))
-        except buttshock.ButtshockError as e:
-            print("Handshake failed, trying communication with predetermined key")
+
+    et312.perform_handshake()
+    print("Key is {0:#x} ({0})".format(et312.key, et312.key))
 
     # Get the current mode
     try:
@@ -46,6 +43,7 @@ def main():
     except Exception as e:
         print("Current mode read failed!")
         raise e
+    et312.write(0x4213, [0x0])
     et312.close()
 
 if __name__ == "__main__":
