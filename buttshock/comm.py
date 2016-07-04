@@ -25,9 +25,14 @@ class ButtshockET312SerialSync(ButtshockET312Base):
                                   bytesize=8, stopbits=1,
                                   xonxoff=0, rtscts=0)
 
+        self.needs_bytes = False
+        # Test for python 3
+        if not isinstance(bytes([0]), str):
+            self.needs_bytes = True
+
     def _send_internal(self, data):
         """Send data to ET-312 via serial port object."""
-        return self.port.write(data)
+        return self.port.write(bytes(data) if self.needs_bytes else data)
 
     def _receive_internal(self, length):
         """Receive data from ET-312 via serial port object."""
