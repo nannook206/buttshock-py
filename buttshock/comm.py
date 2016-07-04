@@ -34,9 +34,12 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         """Send data to ET-312 via serial port object."""
         return self.port.write(bytes(data) if self.needs_bytes else data)
 
-    def _receive_internal(self, length):
+    def _receive_internal(self, length, timeout=None):
         """Receive data from ET-312 via serial port object."""
+        if timeout is not None:
+            self.port.timeout = timeout
         data = self.port.read(length)
+        self.port.timeout = timeout
         # Make sure there's data to check
         if len(data) == 0:
             return []

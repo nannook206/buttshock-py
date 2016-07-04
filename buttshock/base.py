@@ -27,7 +27,7 @@ class ButtshockET312Base(object):
         """Internal send function, to be implemented by inheritors."""
         raise ButtshockError("This should be overridden!")
 
-    def _receive_internal(self, length):
+    def _receive_internal(self, length, timeout=None):
         """Internal receive function, to be implemented by inheritors."""
         raise ButtshockError("This should be overridden!")
 
@@ -44,12 +44,12 @@ class ButtshockET312Base(object):
             data = self._encrypt(data)
         return self._send_internal(data)
 
-    def _receive(self, length):
+    def _receive(self, length, timeout=None):
         """Receive function that handles type conversion and length checks, but does
         not calculate checksum.
 
         """
-        data = self._receive_internal(length)
+        data = self._receive_internal(length, timeout)
         if len(data) < length:
             raise ButtshockError("Received unexpected length {}, expected {}!".format(len(data), length))
         return data
