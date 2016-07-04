@@ -49,7 +49,7 @@ class ButtshockET312Base(object):
         """
         data = self._receive_internal(length)
         if len(data) < length:
-            raise ButtshockError("Received unexpected length %d, expected %d!" % (len(data), length))
+            raise ButtshockError("Received unexpected length {}, expected {}!".format(len(data), length))
         return data
 
     def _receive_check(self, length):
@@ -62,7 +62,7 @@ class ButtshockET312Base(object):
         checksum = data[-1]
         s = sum(data[:-1]) % 256
         if s != checksum:
-            raise ButtshockError("Checksum mismatch! 0x%.02x != 0x%.02x" % (s, checksum))
+            raise ButtshockError("Checksum mismatch! {:#02x} != {:#02x}".format(s, checksum))
         return data[:-1]
 
     def read(self, address):
@@ -103,7 +103,7 @@ class ButtshockET312Base(object):
             self._send_internal([0x0])
             check = self._receive(1)[0]
             if check != 0x7:
-                raise ButtshockError("Handshake received 0x%.02x, expected 0x07!" % (check))
+                raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check))
 
         # Send our chosen key over
         #
@@ -112,7 +112,7 @@ class ButtshockET312Base(object):
         self._send_check([0x2f, 0x00])
         key_info = self._receive_check(3)
         if key_info[0] != 0x21:
-            raise ButtshockError("Handshake received 0x%.02x, expected 0x21!" % (key_info[0]))
+            raise ButtshockError("Handshake received {:#02x}, expected 0x21!" % (key_info[0]))
 
         # Generate final key here. It's usually 0x55 ^ our_key ^ their_key, but
         # since our key is 0, we can shorten it to 0x55 ^ their_key
