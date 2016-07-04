@@ -113,9 +113,9 @@ class ButtshockET312Base(object):
             sync_byte = self._encrypt(sync_byte)
         for i in range(12):
             self._send_internal(sync_byte)
-            check = self._receive(1)[0]
-            if check != 0x7:
-                raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check))
+        check = self._receive(12)
+        if len(check) == 0 or check[-1] != 0x7:
+            raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check))
 
         # If we already have a key, stop here
         if self.key is not None:
