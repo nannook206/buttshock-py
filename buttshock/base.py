@@ -95,8 +95,6 @@ class ButtshockET312Base(object):
         ET312 Firmware Versions 1.6 and below.
 
         """
-        # TODO throw an exception if we just get a shitload of 0x7. Why does
-        # this box suck so much.
 
         # Handshake. Do it twice, just 'cause.
         for i in range(2):
