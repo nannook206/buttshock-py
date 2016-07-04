@@ -9,16 +9,17 @@ import serial
 
 
 class ButtshockET312SerialSync(ButtshockET312Base):
-    """Synchronous serial implementation of Buttshock ET-312 protocol. All read/write
-    calls will block. You have been warned.
+    """Synchronous serial implementation of Buttshock ET-312 protocol. All
+    read/write calls will block. You have been warned.
 
     If you are looking to talk directly to the box, use this. At least, until
     there's an async one. If there is now and I forgot to update this comment,
     use that.
 
     """
-    def __init__(self, port, key=None):
-        """Initialization function. Follows RAII, so creating the object opens the port."""
+    def __init__(self, port, key=None, shift_baud_rate=False):
+        """Initialization function. Follows RAII, so creating the object opens the
+        port."""
         super(ButtshockET312SerialSync, self).__init__(key)
         self.port = serial.Serial(port, 19200, timeout=1,
                                   parity=serial.PARITY_NONE,
@@ -29,6 +30,20 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         # Test for python 3
         if not isinstance(bytes([0]), str):
             self.needs_bytes = True
+        self.shift_baud_rate = shift_baud_rate
+
+    def __enter__(self):
+        super(ButtshockET312SerialSync, self).__enter__()
+        print("{:#04x}".format(self.get_baud_rate()))
+        if self.shift_baud_rate:
+            self.change_baud_rate(38400)
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self.shift_baud_rate:
+            self.change_baud_rate(19200)
+        # Reset the key to zero as the last thing we do
+        super(ButtshockET312SerialSync, self).__exit__(type, value, traceback)
 
     def _send_internal(self, data):
         """Send data to ET-312 via serial port object."""

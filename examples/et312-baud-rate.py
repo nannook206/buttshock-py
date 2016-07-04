@@ -9,15 +9,16 @@ import argparse
 import timeit
 
 et312 = None
-
+i = 0
 
 def read_mode():
-    global et312
+    global et312, i
     try:
         mode = et312.read(0x407b)
-    except Exception as e:
+        print(i)
+        i += 1
+    except Exception:
         print("Current mode read failed!")
-        raise e
 
 
 def main():
@@ -32,22 +33,20 @@ def main():
         print("Serial port argument is required!")
         sys.exit(1)
 
-    et312 = buttshock.ButtshockET312SerialSync(args.serial_port)
+    with buttshock.ButtshockET312SerialSync(args.serial_port) as et312:
+        et312.perform_handshake()
+        key = et312.key
+        print("Key is {0:#x} ({0})".format(et312.key, et312.key))
 
-    et312.perform_handshake()
-    print("Key is {0:#x} ({0})".format(et312.key, et312.key))
-
-    current_baud_rate = et312.get_baud_rate()
-    print("Current baud flag: {:#02x}".format(current_baud_rate))
-    print("Running 1000 mode gets test")
-    # Get the current mode
-    print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
+        current_baud_rate = et312.get_baud_rate()
+        print("Current baud flag: {:#02x}".format(current_baud_rate))
+        print("Running 1000 mode gets test")
+        # Get the current mode
+        print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
     print("Shifting baud rate")
-    et312.change_baud_rate()
-    print("Running 1000 mode gets test")
-    print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
-    et312.reset_key()
-    et312.close()
+    with buttshock.ButtshockET312SerialSync(args.serial_port, key=key, shift_baud_rate=True) as et312:
+        print("Running 1000 mode gets test")
+        print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
 
 if __name__ == "__main__":
     main()

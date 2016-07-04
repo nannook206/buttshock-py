@@ -159,3 +159,13 @@ class ButtshockET312Base(object):
 
     def reset_key(self):
         self.write(0x4213, [0x0])
+
+    def __enter__(self):
+        # Handshake before anything else
+        self.perform_handshake()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        # Reset the key to zero as the last thing we do
+        self.reset_key()
+        self.close()
