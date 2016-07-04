@@ -17,9 +17,9 @@ class ButtshockET312SerialSync(ButtshockET312Base):
     use that.
 
     """
-    def __init__(self, port, key=None, key_file=None):
+    def __init__(self, port, key=None):
         """Initialization function. Follows RAII, so creating the object opens the port."""
-        super(ButtshockET312SerialSync, self).__init__(key, key_file)
+        super(ButtshockET312SerialSync, self).__init__(key)
         self.port = serial.Serial(port, 19200, timeout=1,
                                   parity=serial.PARITY_NONE,
                                   bytesize=8, stopbits=1,

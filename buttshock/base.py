@@ -17,11 +17,10 @@ class ButtshockET312Base(object):
     Base class for ET-312 communication. Should be inherited by other classes that
     implement specific communication types, such as RS-232.
     """
-    def __init__(self, key=None, key_file=None):
+    def __init__(self, key=None):
         "Initialization function"
         # Set the crypto key to None, since it's used to tell whether or not we
         # should encrypt outgoing messages.
-        self.key_file = key_file
         self.key = key
 
     def _send_internal(self, data):
@@ -32,6 +31,9 @@ class ButtshockET312Base(object):
         """Internal receive function, to be implemented by inheritors."""
         raise ButtshockError("This should be overridden!")
 
+    def _encrypt(self, data):
+        return [x ^ self.key for x in data]
+
     def _send_check(self, data):
         """Takes data, calculates checksum, encrypts if key is available."""
         # Append checksum before encrypting
@@ -39,7 +41,7 @@ class ButtshockET312Base(object):
         data.append(checksum)
         # Only encrypt if we have a key
         if self.key:
-            data = [x ^ self.key for x in data]
+            data = self._encrypt(data)
         return self._send_internal(data)
 
     def _receive(self, length):
@@ -96,12 +98,28 @@ class ButtshockET312Base(object):
 
         """
 
-        # Handshake. Do it twice, just 'cause.
-        for i in range(2):
-            self._send_internal([0x0])
+        # Realign packet boundaries for the protocol.
+        #
+        # If another program has accessed the ET-312 before this session, we're
+        # not sure what state it left the protocol in. Sending 0x0, possibly
+        # encrypted with the key that the box established prior to this
+        # session, should allow the box to realign the protocol. As the longest
+        # command possible is 11 bytes (a command to write 8 bytes to an
+        # address), we need to send up to 12 0s. Once we get back a 0x7, the
+        # protocol is synced and we can move on.
+        sync_byte = [0]
+        # If a key was passed in on object construction, use it.
+        if self.key is not None:
+            sync_byte = self._encrypt(sync_byte)
+        for i in range(12):
+            self._send_internal(sync_byte)
             check = self._receive(1)[0]
             if check != 0x7:
                 raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check))
+
+        # If we already have a key, stop here
+        if self.key is not None:
+            return
 
         # Send our chosen key over
         #
