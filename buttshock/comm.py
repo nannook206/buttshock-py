@@ -46,5 +46,5 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         self.port.close()
 
     def change_baud_rate(self):
-        super().change_baud_rate()
+        super(ButtshockET312SerialSync, self).change_baud_rate()
         self.port.baudrate = 38400
