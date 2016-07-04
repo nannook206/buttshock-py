@@ -3,6 +3,19 @@
 # Contains base classes for communicating with the to the ErosTek ET-312B
 # Electrostim Unit.
 
+import time
+
+ADDRS = {
+    "BAUD_RATE_LOW": 0x4029,
+    "BAUD_RATE_HIGH": 0x4020,
+}
+
+VALUES = {
+    "BAUD_19200": 0x19,
+    "BAUD_38400": 0xc,
+    "BAUD_250000": 0xc,
+}
+
 
 class ButtshockError(Exception):
     """
@@ -17,6 +30,7 @@ class ButtshockET312Base(object):
     Base class for ET-312 communication. Should be inherited by other classes that
     implement specific communication types, such as RS-232.
     """
+
     def __init__(self, key=None):
         "Initialization function"
         # Set the crypto key to None, since it's used to tell whether or not we
@@ -44,13 +58,13 @@ class ButtshockET312Base(object):
             data = self._encrypt(data)
         return self._send_internal(data)
 
-    def _receive(self, length, timeout=None):
+    def _receive(self, length, timeout=None, skip_len_check=False):
         """Receive function that handles type conversion and length checks, but does
         not calculate checksum.
 
         """
         data = self._receive_internal(length, timeout)
-        if len(data) < length:
+        if not skip_len_check and len(data) < length:
             raise ButtshockError("Received unexpected length {}, expected {}!".format(len(data), length))
         return data
 
@@ -76,7 +90,7 @@ class ButtshockET312Base(object):
         data = self._receive_check(3)
         return data[1]
 
-    def write(self, address, data):
+    def write(self, address, data, skip_receive=False):
         """Write 1-8 bytes to memory at the address given. Address
         corresponds to the table in the serial protocol documentation.
 
@@ -87,6 +101,8 @@ class ButtshockET312Base(object):
         if 0 > length or length > 8:
             raise ButtshockError("Can only write between 1-8 bytes!")
         self._send_check([((0x3 + length) << 0x4) | 0xd, address >> 8, address & 0xff] + data)
+        if skip_receive:
+            return None
         data = self._receive(1)
         return data[0]
 
@@ -113,9 +129,17 @@ class ButtshockET312Base(object):
             sync_byte = self._encrypt(sync_byte)
         for i in range(12):
             self._send_internal(sync_byte)
-        check = self._receive(12)
-        if len(check) == 0 or check[-1] != 0x7:
-            raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check))
+            # Arbitrary timeouts are a horrible idea, but since we're syncing
+            # here and not using coroutines, just deal with it.
+            check = self._receive(1, timeout=0.1, skip_len_check=True)
+            if len(check) == 0:
+                continue
+            if check[0] != 0x7:
+                raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check[-1]))
+            else:
+                break
+        if len(check) == 0:
+            raise ButtshockError("Handshake received no reply!")
 
         # If we already have a key, stop here
         if self.key is not None:
@@ -134,25 +158,26 @@ class ButtshockET312Base(object):
         # since our key is 0, we can shorten it to 0x55 ^ their_key
         self.key = 0x55 ^ key_info[1]
 
-    def change_baud_rate(self):
+    def _change_baud_rate_internal(self, rate):
+        """Internal baud rate change function, to be implemented by inheritors."""
+        raise ButtshockError("This should be overridden!")
+
+    def change_baud_rate(self, rate):
         # This will require sending over 2 bytes at the same time, as any
         # transmission after this will happen at the new baud rate.
-        self.write(0x4029, [0x0c])
-        pass
+        if rate == 38400:
+            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_38400"]], skip_receive=True)
+        elif rate == 19200:
+            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_19200"]], skip_receive=True)
+        else:
+            raise ButtshockError("Baud rate {} not valid! Can only run at 19200 or 38400".format(rate))
+        data = self._receive(1)
+        self._change_baud_rate_internal(rate)
 
     def get_baud_rate(self):
-        baud_lh = self.read(0x4029)
-        baud_uh = self.read(0x4020)
-        return ((baud_uh & 0xf) << 0x8) & baud_lh
-
-    def get_stack_ptr(self):
-        return (self.read(0x405E) << 8) | self.read(0x405D)
-
-    def set_stack_ptr(self):
-        return self.write(0x405D, [0x80, 0x01])
-
-    def get_mcucsr(self):
-        return self.read(0x4054)
+        baud_lh = self.read(ADDRS["BAUD_RATE_LOW"])
+        baud_uh = self.read(ADDRS["BAUD_RATE_HIGH"])
+        return ((baud_uh & 0xf) << 0x8) | baud_lh
 
     def reset_box(self):
         self.write(0x4070, [0x17])

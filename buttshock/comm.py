@@ -51,10 +51,11 @@ class ButtshockET312SerialSync(ButtshockET312Base):
 
     def _receive_internal(self, length, timeout=None):
         """Receive data from ET-312 via serial port object."""
+        old_timeout = self.port.timeout
         if timeout is not None:
             self.port.timeout = timeout
         data = self.port.read(length)
-        self.port.timeout = timeout
+        self.port.timeout = old_timeout
         # Make sure there's data to check
         if len(data) == 0:
             return []
@@ -68,6 +69,5 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         """Close port."""
         self.port.close()
 
-    def change_baud_rate(self):
-        super(ButtshockET312SerialSync, self).change_baud_rate()
-        self.port.baudrate = 38400
+    def _change_baud_rate_internal(self, rate):
+        self.port.baudrate = rate
