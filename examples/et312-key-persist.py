@@ -14,19 +14,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", dest="serial_port",
                         help="Serial Port to use")
-    parser.add_argument("-k", "--key", dest="key",
-                        help="Predetermined key to use")
-    parser.add_argument("-f", "--key_file", dest="key_file",
-                        help="File to store/load box communications key from.")
 
     args = parser.parse_args()
 
     if not args.serial_port:
         print("Serial port argument is required!")
-        sys.exit(1)
-
-    if args.key and not int(args.key):
-        print("Predefined key must be an integer!")
         sys.exit(1)
 
     et312 = buttshock.ButtshockET312SerialSync(args.serial_port,
