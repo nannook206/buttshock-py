@@ -21,9 +21,7 @@ def main():
         print("Serial port argument is required!")
         sys.exit(1)
 
-    et312 = buttshock.ButtshockET312SerialSync(args.serial_port,
-                                               key=int(args.key) if args.key else None,
-                                               key_file=args.key_file)
+    et312 = buttshock.ButtshockET312SerialSync(args.serial_port)
 
     et312.perform_handshake()
     print("Key is {0:#x} ({0})".format(et312.key, et312.key))
