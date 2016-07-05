@@ -1,9 +1,6 @@
 # Demonstrate baud rate shifting for ET-312
 
 import sys
-
-sys.path.append("..")
-
 import buttshock
 import argparse
 import timeit
@@ -11,10 +8,11 @@ import timeit
 et312 = None
 i = 0
 
+
 def read_mode():
     global et312, i
     try:
-        mode = et312.read(0x407b)
+        et312.read(0x407b)
         print(i)
         i += 1
     except Exception:
@@ -44,7 +42,9 @@ def main():
         # Get the current mode
         print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
     print("Shifting baud rate")
-    with buttshock.ButtshockET312SerialSync(args.serial_port, key=key, shift_baud_rate=True) as et312:
+    with buttshock.ButtshockET312SerialSync(args.serial_port,
+                                            key=key,
+                                            shift_baud_rate=True) as et312:
         print("Running 1000 mode gets test")
         print("Total time: {}", timeit.timeit(stmt=read_mode, number=1000))
 

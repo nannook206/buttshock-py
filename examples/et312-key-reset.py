@@ -3,9 +3,6 @@
 # Demonstrates reuse of keys for ET-312 sessions.
 
 import sys
-
-sys.path.append("..")
-
 import buttshock
 import argparse
 
