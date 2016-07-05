@@ -34,7 +34,6 @@ class ButtshockET312SerialSync(ButtshockET312Base):
 
     def __enter__(self):
         super(ButtshockET312SerialSync, self).__enter__()
-        print("{:#04x}".format(self.get_baud_rate()))
         if self.shift_baud_rate:
             self.change_baud_rate(38400)
         return self
@@ -44,6 +43,8 @@ class ButtshockET312SerialSync(ButtshockET312Base):
             self.change_baud_rate(19200)
         # Reset the key to zero as the last thing we do
         super(ButtshockET312SerialSync, self).__exit__(type, value, traceback)
+        # Actually close the serial port
+        self.close()
 
     def _send_internal(self, data):
         """Send data to ET-312 via serial port object."""
@@ -71,3 +72,4 @@ class ButtshockET312SerialSync(ButtshockET312Base):
 
     def _change_baud_rate_internal(self, rate):
         self.port.baudrate = rate
+
