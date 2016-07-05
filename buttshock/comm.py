@@ -5,13 +5,6 @@
 
 
 from .base import ButtshockET312Base
-try:
-    import serial
-except:
-    # Don't actually throw until we try to create a serial port. We may be
-    # trying to mock otherwise.
-    pass
-
 
 class ButtshockET312SerialSync(ButtshockET312Base):
     """Synchronous serial implementation of Buttshock ET-312 protocol. All
@@ -30,12 +23,10 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         # tests. There are cleaner ways to mock this, but this will do for now.
         if not hasattr(self, "port"):
             # Check argument validity
+            import serial
             if not port or type(port) is not str:
                 raise ButtshockIOError("Serial port name is missing or is not string!")
-            if not serial:
-                # If we got here without importing serial, we have a problem.
-                # Try again and throw this time.
-                import serial
+
             self.port = serial.Serial(port, 19200, timeout=1,
                                       parity=serial.PARITY_NONE,
                                       bytesize=8, stopbits=1,
