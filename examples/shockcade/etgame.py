@@ -41,7 +41,7 @@ import fcntl
 import argparse
 from time import sleep
 
-sys.path.append("../..")
+sys.path.append("../../")
 
 import buttshock
 
@@ -65,7 +65,8 @@ def main():
                 fcntl.flock(et312.port.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 connected = True
             break
-        except:
+        except Exception as e:
+            print(e)
             sleep(.2)
 
     if (not connected):
@@ -82,25 +83,21 @@ def main():
             # so let's get it into a blank empty mode. easiest way is calltable 18
             et312.write(0x4078, [0x90]) # mode 90 doesn't exist
             et312.write(0x4070, [18]) # execute mode 90
+            while (et312.read(0x4070) != 0xff):
+                pass            
 
             # Overwrite name of current mode with spaces, then display "Game"
-            sleep(0.005)
             et312.write(0x4180, [0x64])
             et312.write(0x4070, [0x15])
-            sleep(0.005)
-            et312.write(0x4180, [ord('G'),9])
-            et312.write(0x4070, [0x13])
-            sleep(0.005)
-            et312.write(0x4180, [ord('a'),10])
-            et312.write(0x4070, [0x13])
-            sleep(0.005)
-            et312.write(0x4180, [ord('m'),11])
-            et312.write(0x4070, [0x13])
-            sleep(0.005)
-            et312.write(0x4180, [ord('e'),12])
-            et312.write(0x4070, [0x13])        
+            while (et312.read(0x4070) != 0xff):
+                pass
+            for pos, char in enumerate('Game'):
+                et312.write(0x4180, [ord(char),pos+9])
+                et312.write(0x4070, [0x13])
+                while (et312.read(0x4070) != 0xff):
+                    pass
 
-            for base in range(0x4000,0x4101,0x100):
+            for base in [0x4000,0x4100]:
                 et312.write(base+0xa8, [0,0]) # don't increment channel A intensity
                 et312.write(base+0xa5, [128]) # A intensity mod value = min
                 et312.write(base+0xac, [0]) # no select
@@ -119,7 +116,7 @@ def main():
 
             et312.write(0x4093,[42]) # we're provisioned
                 
-        for base in range(0x4000,0x4101,0x100):
+        for base in [0x4000,0x4100]:
             if ( (not args.channel) or (base == 0x4000 and args.channel == "a") or ( base == 0x4100 and args.channel == "b")):
                     
                 et312.write(base+0xac, [0]) # no select
@@ -135,8 +132,8 @@ def main():
                     et312.write(base+0xa5, [level])
                     et312.write(base+0xa6, [128,level]) # Min, Max
                     et312.write(base+0xa8, [10, 255])   # rate, direction
-                    et312.write(base+0xac, [1])  # use fast timer
                     et312.write(base+0xaa, [0xfc]) # at min? then stop!
+                    et312.write(base+0xac, [1])  # use fast timer
                     
     except Exception as e:
         print(e)
