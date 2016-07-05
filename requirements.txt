@@ -1,5 +1,1 @@
 pyserial
-pytest
-pytest-cov
-pytest-travis-fold
-codeclimate-test-reporter

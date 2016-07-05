@@ -1,0 +1,7 @@
+pytest
+pytest-cov
+pytest-pep8
+pytest-travis-fold
+codeclimate-test-reporter
+twine
+wheel
