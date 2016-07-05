@@ -5,3 +5,4 @@ pytest-travis-fold
 codeclimate-test-reporter
 twine
 wheel
+clint
