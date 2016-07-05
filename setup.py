@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from distutils.core import setup
 
 import buttshock
 
@@ -15,8 +15,7 @@ setup(name='buttshock',
       license='BSD License',
       packages=['buttshock'],
       keywords=['estim', 'buttshock', 'teledildonics', 'electrostim'],
-      install_requires=['pyserial'],
-      setup_requires=['pytest-runner'],
+      setup_requires=['pyserial', 'pytest-runner'],
       tests_require=['pytest'],
       classifiers=[
           'Development Status :: 3 - Alpha',
