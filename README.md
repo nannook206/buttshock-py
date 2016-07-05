@@ -1,5 +1,9 @@
 # buttshock-py
 
+[![Build Status](https://travis-ci.org/metafetish/buttshock-py.svg?branch=master)](https://travis-ci.org/metafetish/buttshock-py)
+[![Code Climate](https://codeclimate.com/github/metafetish/buttshock-py/badges/gpa.svg)](https://codeclimate.com/github/metafetish/buttshock-py)
+[![Test Coverage](https://codeclimate.com/github/metafetish/buttshock-py/badges/coverage.svg)](https://codeclimate.com/github/metafetish/buttshock-py/coverage)
+
 Python implementation of serial based control of the following devices:
 
 - Erostek ET-312 Electrostimulation Device
