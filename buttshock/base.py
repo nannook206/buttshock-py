@@ -3,8 +3,6 @@
 # Contains base classes for communicating with the to the ErosTek ET-312B
 # Electrostim Unit.
 
-import time
-
 ADDRS = {
     "BAUD_RATE_LOW": 0x4029,
     "BAUD_RATE_HIGH": 0x4020,
@@ -12,8 +10,7 @@ ADDRS = {
 
 VALUES = {
     "BAUD_19200": 0x19,
-    "BAUD_38400": 0xc,
-    "BAUD_250000": 0xc,
+    "BAUD_38400": 0x0c
 }
 
 
@@ -21,15 +18,20 @@ class ButtshockError(Exception):
     """
     General exception class for ET312 errors
     """
-    # TODO Should probably add some sort of error codes
+    pass
+
+
+class ButtshockChecksumError(ButtshockError):
+    pass
+
+
+class ButtshockIOError(ButtshockError):
     pass
 
 
 class ButtshockET312Base(object):
-    """
-    Base class for ET-312 communication. Should be inherited by other classes that
-    implement specific communication types, such as RS-232.
-    """
+    """Base class for ET-312 communication. Should be inherited by other classes
+    that implement specific communication types, such as RS-232."""
 
     def __init__(self, key=None):
         "Initialization function"
@@ -39,11 +41,11 @@ class ButtshockET312Base(object):
 
     def _send_internal(self, data):
         """Internal send function, to be implemented by inheritors."""
-        raise ButtshockError("This should be overridden!")
+        raise RuntimeError("This should be overridden!")
 
     def _receive_internal(self, length, timeout=None):
         """Internal receive function, to be implemented by inheritors."""
-        raise ButtshockError("This should be overridden!")
+        raise RuntimeError("This should be overridden!")
 
     def _encrypt(self, data):
         return [x ^ self.key for x in data]
@@ -65,7 +67,7 @@ class ButtshockET312Base(object):
         """
         data = self._receive_internal(length, timeout)
         if not skip_len_check and len(data) < length:
-            raise ButtshockError("Received unexpected length {}, expected {}!".format(len(data), length))
+            raise ButtshockIOError("Received unexpected length {}, expected {}!".format(len(data), length))
         return data
 
     def _receive_check(self, length):
@@ -78,7 +80,7 @@ class ButtshockET312Base(object):
         checksum = data[-1]
         s = sum(data[:-1]) % 256
         if s != checksum:
-            raise ButtshockError("Checksum mismatch! {:#02x} != {:#02x}".format(s, checksum))
+            raise ButtshockChecksumError("Checksum mismatch! {:#02x} != {:#02x}".format(s, checksum))
         return data[:-1]
 
     def read(self, address):
@@ -96,11 +98,12 @@ class ButtshockET312Base(object):
 
         """
         if type(data) is not list:
-            raise ButtshockError("Must receive data as a list!")
+            raise TypeError("Must receive data as a list!")
         length = len(data)
         if 0 > length or length > 8:
-            raise ButtshockError("Can only write between 1-8 bytes!")
-        self._send_check([((0x3 + length) << 0x4) | 0xd, address >> 8, address & 0xff] + data)
+            raise ButtshockIOError("Can only write between 1-8 bytes!")
+        self._send_check([((0x3 + length) << 0x4) | 0xd, address >> 8,
+                          address & 0xff] + data)
         if skip_receive:
             return None
         data = self._receive(1)
@@ -135,11 +138,11 @@ class ButtshockET312Base(object):
             if len(check) == 0:
                 continue
             if check[0] != 0x7:
-                raise ButtshockError("Handshake received {:#02x}, expected 0x07!".format(check[-1]))
+                raise ButtshockIOError("Handshake received {:#02x}, expected 0x07!".format(check[-1]))
             else:
                 break
         if len(check) == 0:
-            raise ButtshockError("Handshake received no reply!")
+            raise ButtshockIOError("Handshake received no reply!")
 
         # If we already have a key, stop here
         if self.key is not None:
@@ -152,7 +155,7 @@ class ButtshockET312Base(object):
         self._send_check([0x2f, 0x00])
         key_info = self._receive_check(3)
         if key_info[0] != 0x21:
-            raise ButtshockError("Handshake received {:#02x}, expected 0x21!" % (key_info[0]))
+            raise ButtshockIOError("Handshake received {:#02x}, expected 0x21!".format(key_info[0]))
 
         # Generate final key here. It's usually 0x55 ^ our_key ^ their_key, but
         # since our key is 0, we can shorten it to 0x55 ^ their_key
@@ -166,12 +169,14 @@ class ButtshockET312Base(object):
         # This will require sending over 2 bytes at the same time, as any
         # transmission after this will happen at the new baud rate.
         if rate == 38400:
-            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_38400"]], skip_receive=True)
+            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_38400"]],
+                       skip_receive=True)
         elif rate == 19200:
-            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_19200"]], skip_receive=True)
+            self.write(ADDRS["BAUD_RATE_LOW"], [VALUES["BAUD_19200"]],
+                       skip_receive=True)
         else:
             raise ButtshockError("Baud rate {} not valid! Can only run at 19200 or 38400".format(rate))
-        data = self._receive(1)
+        self._receive(1)
         self._change_baud_rate_internal(rate)
 
     def get_baud_rate(self):
@@ -193,4 +198,3 @@ class ButtshockET312Base(object):
     def __exit__(self, type, value, traceback):
         # Reset the key to zero as the last thing we do
         self.reset_key()
-        self.close()
