@@ -1,11 +1,4 @@
-import sys
-import os
-
-try:
-    import buttshock
-except:
-    sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
-    import buttshock
+import buttshock
 
 
 def test_emulator():
