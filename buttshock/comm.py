@@ -21,10 +21,16 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         """Initialization function. Follows RAII, so creating the object opens the
         port."""
         super(ButtshockET312SerialSync, self).__init__(key)
-        self.port = serial.Serial(port, 19200, timeout=1,
-                                  parity=serial.PARITY_NONE,
-                                  bytesize=8, stopbits=1,
-                                  xonxoff=0, rtscts=0)
+        # Allow derived classes to set up a port to mock serial ports for
+        # tests. There are cleaner ways to mock this, but this will do for now.
+        if not hasattr(self, "port"):
+            # Check argument validity
+            if not port or type(port) is not str:
+                raise ButtshockIOError("Serial port name is missing or is not string!")
+            self.port = serial.Serial(port, 19200, timeout=1,
+                                      parity=serial.PARITY_NONE,
+                                      bytesize=8, stopbits=1,
+                                      xonxoff=0, rtscts=0)
 
         self.needs_bytes = False
         # Test for python 3

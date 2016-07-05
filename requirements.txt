@@ -1,2 +1,4 @@
 pyserial
 pytest
+pytest-cov
+pytest-travis-fold

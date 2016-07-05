@@ -16,9 +16,8 @@ setup(name='buttshock',
       packages=['buttshock'],
       keywords=['estim', 'buttshock', 'teledildonics', 'electrostim'],
       install_requires=['pyserial'],
-      extras_require={
-          'dev': 'pytest'
-      },
+      setup_requires=['pytest-runner'],
+      tests_require=['pytest'],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',
