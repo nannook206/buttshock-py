@@ -1,10 +1,20 @@
-# erosoutsider-py
+# buttshock-py
 
 Python implementation of serial based control of the following devices:
 
 - Erostek ET-312 Electrostimulation Device
 - Erostek ET-232 Electrostimulation Device
 - Estim Systems 2B Electrostimulation Device
+
+Tested with the following versions of Python
+
+- Python 2.7
+- Python 3.3
+- Python 3.4
+- Python 3.5
+- Python 3.6
+
+Using pyserial 3.1.1 (thought may work with pyserial 2.6+, but untested)
 
 ## Buttshock Project Goals
 
