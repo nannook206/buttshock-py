@@ -21,7 +21,7 @@ def main():
         print("Serial port argument is required!")
         sys.exit(1)
 
-    with buttshock.ButtshockET312SerialSync(args.serial_port, shift_baud_rate=True) as et312:
+    with buttshock.ButtshockET312SerialSync(args.serial_port) as et312:
         print("Key is {0:#x} ({0})".format(et312.key, et312.key))
 
         # Get the current mode
