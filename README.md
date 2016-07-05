@@ -99,3 +99,12 @@ the following BSD license:
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+
+## Versions
+
+- 0.1.1 (2016-07-04)
+  - CI/automation changes
+- 0.1.0 (2016-07-04)
+  - Initial Release
+  - Basic ET-312 functionality
+
