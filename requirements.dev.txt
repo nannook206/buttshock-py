@@ -6,3 +6,6 @@ codeclimate-test-reporter
 twine
 wheel
 clint
+sphinx
+tox
+sphinx_rtd_theme
