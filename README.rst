@@ -12,10 +12,16 @@ Python implementation of serial based control of the following devices:
 .. list-table::
     :stub-columns: 1
 
+    * - docs
+      - |docs|
     * - tests
-      - | |travis| |coverage| |health|
+      - |travis| |coverage| |health|
     * - package
       - |license| |version| |pyversion|
+
+.. |docs| image:: https://readthedocs.org/projects/buttshock-py/badge/?version=latest
+   :target: http://buttshock-py.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 .. |travis| image:: https://img.shields.io/travis/metafetish/buttplug-py/master.svg?label=build
    :target: https://travis-ci.org/metafetish/buttshock-py
