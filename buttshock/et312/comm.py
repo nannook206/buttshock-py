@@ -4,7 +4,7 @@
 # protocol.
 
 from .base import ET312Base
-from ..base import ButtshockIOError
+from ..errors import ButtshockIOError
 
 
 class ET312SerialSync(ET312Base):

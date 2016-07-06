@@ -3,7 +3,7 @@
 # Contains base classes for communicating with the to the ErosTek ET-312B
 # Electrostim Unit.
 
-from ..base import ButtshockChecksumError, ButtshockError, ButtshockIOError
+from ..errors import ButtshockChecksumError, ButtshockError, ButtshockIOError
 
 ADDRS = {
     "BAUD_RATE_LOW": 0x4029,
