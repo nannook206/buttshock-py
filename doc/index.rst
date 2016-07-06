@@ -3,15 +3,29 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to buttshock-py's documentation!
-========================================
+Buttshock Python Library Documentation
+======================================
 
 Contents:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
+   overview
+   et312
+   et232
+   2b
 
+buttshock-py is a Python implementation of control protocols for the
+following electrostim devices:
+
+- Erostek ET-312 Electrostimulation Device
+- Erostek ET-232 Electrostimulation Device
+- Estim Systems 2B Electrostimulation Device
+
+buttshock-py provides serial communication features, as well as
+simplified emulators for testing functionality against software if
+hardware is not available.
 
 Indices and tables
 ==================

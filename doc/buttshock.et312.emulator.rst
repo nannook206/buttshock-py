@@ -1,4 +1,4 @@
-buttshock.et312.emulator module
+ET312 Emulator Module Reference
 ===============================
 
 .. automodule:: buttshock.et312.emulator

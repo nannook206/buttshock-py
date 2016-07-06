@@ -1,4 +1,4 @@
-buttshock.et312.base module
+ET312 Base Module Reference
 ===========================
 
 .. automodule:: buttshock.et312.base

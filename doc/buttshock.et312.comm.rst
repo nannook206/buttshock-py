@@ -1,4 +1,4 @@
-buttshock.et312.comm module
+ET312 Comm Module Reference
 ===========================
 
 .. automodule:: buttshock.et312.comm
