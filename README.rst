@@ -15,7 +15,7 @@ Python implementation of serial based control of the following devices:
     * - docs
       - |docs|
     * - tests
-      - | |travis| |coverage| |health|
+      - |travis| |coverage| |health|
     * - package
       - |license| |version| |pyversion|
 
