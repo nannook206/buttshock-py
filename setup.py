@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-
+import os
 import buttshock
 
 setup(name='buttshock',
       version="{}".format(buttshock.VERSION),
 	  description='Python Libraries for Estim Unit (ErosTek ET312, Erostek ET232, Estim Systems 2B) Control',
-      long_description="""Python Libraries for Estim Unit (ErosTek ET312, Erostek ET232, Estim Systems 2B) Control. Provides protocol implementations for serial communications, as well as utility functions for easily accessing features of estim equipment.""",
+      long_description=(open('README.rst').read() + '\n' + open(os.path.join('CHANGES.rst')).read()),
       author='qDot',
       author_email='kyle@machul.is',
       url='http://github.com/metafetish/buttshock-py',
