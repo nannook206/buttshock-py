@@ -15,7 +15,7 @@ Python implementation of serial based control of the following devices:
     * - tests
       - | |travis| |coverage| |health|
     * - package
-      - |license| |version| |pyversions|
+      - |license| |version| |pyversion|
 
 .. |travis| image:: https://img.shields.io/travis/metafetish/buttplug-py/master.svg?label=build
    :target: https://travis-ci.org/metafetish/buttshock-py
