@@ -1,8 +1,8 @@
-from .comm import ButtshockET312SerialSync
+from .comm import ET312SerialSync
 import random
 
 
-class ButtshockET312Emulator(object):
+class ET312Emulator(object):
     def __init__(self):
         self.output_buffer = []
         self.rom = [0] * 512
@@ -66,9 +66,9 @@ class ButtshockET312Emulator(object):
         return output
 
 
-class ButtshockET312SerialEmulator(object):
+class ET312SerialEmulator(object):
     def __init__(self):
-        self.emu = ButtshockET312Emulator()
+        self.emu = ET312Emulator()
         self.timeout = 1
         self.baud = 19200
 
@@ -82,12 +82,12 @@ class ButtshockET312SerialEmulator(object):
         self.emu.command(data)
 
 
-class ButtshockET312EmulatorSync(ButtshockET312SerialSync):
+class ET312EmulatorSync(ET312SerialSync):
     def __init__(self, port=None, key=None, shift_baud_rate=False):
         """Initialization function. Follows RAII, so creating the object opens the
         port."""
         if port is None:
-            self.port = ButtshockET312SerialEmulator()
-        super(ButtshockET312EmulatorSync, self).__init__(port,
-                                                         key,
-                                                         shift_baud_rate)
+            self.port = ET312SerialEmulator()
+        super(ET312EmulatorSync, self).__init__(port,
+                                                key,
+                                                shift_baud_rate)

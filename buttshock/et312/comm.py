@@ -3,10 +3,11 @@
 # Contains classes for RS-232 implementations of the ET-312 communications
 # protocol.
 
+from .base import ET312Base
+from ..base import ButtshockIOError
 
-from .base import ButtshockET312Base
 
-class ButtshockET312SerialSync(ButtshockET312Base):
+class ET312SerialSync(ET312Base):
     """Synchronous serial implementation of Buttshock ET-312 protocol. All
     read/write calls will block. You have been warned.
 
@@ -18,7 +19,7 @@ class ButtshockET312SerialSync(ButtshockET312Base):
     def __init__(self, port, key=None, shift_baud_rate=False):
         """Initialization function. Follows RAII, so creating the object opens the
         port."""
-        super(ButtshockET312SerialSync, self).__init__(key)
+        super(ET312SerialSync, self).__init__(key)
         # Allow derived classes to set up a port to mock serial ports for
         # tests. There are cleaner ways to mock this, but this will do for now.
         if not hasattr(self, "port"):
@@ -39,7 +40,7 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         self.shift_baud_rate = shift_baud_rate
 
     def __enter__(self):
-        super(ButtshockET312SerialSync, self).__enter__()
+        super(ET312SerialSync, self).__enter__()
         if self.shift_baud_rate:
             self.change_baud_rate(38400)
         return self
@@ -48,7 +49,7 @@ class ButtshockET312SerialSync(ButtshockET312Base):
         if self.shift_baud_rate:
             self.change_baud_rate(19200)
         # Reset the key to zero as the last thing we do
-        super(ButtshockET312SerialSync, self).__exit__(type, value, traceback)
+        super(ET312SerialSync, self).__exit__(type, value, traceback)
         # Actually close the serial port
         self.close()
 
