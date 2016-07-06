@@ -43,7 +43,7 @@ from time import sleep
 
 sys.path.append("../../")
 
-import buttshock
+import buttshock.et312
 
 def main():
     parser = argparse.ArgumentParser()
@@ -60,7 +60,7 @@ def main():
     connected = False
     for _ in range(10):
         try:
-            et312 = buttshock.ButtshockET312SerialSync(port)
+            et312 = buttshock.et312.ET312SerialSync(port)
             if et312.port.isOpen():
                 fcntl.flock(et312.port.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 connected = True
