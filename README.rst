@@ -29,11 +29,11 @@ Python implementation of serial based control of the following devices:
    :target: https://codeclimate.com/github/metafetish/buttshock-py/coverage
    :alt: Code health
 
-.. |license| image:: https://img.shields.io/pypi/l/pillow.svg
+.. |license| image:: https://img.shields.io/pypi/l/buttshock.svg
    :target: https://pypi.python.org/pypi/buttshock/
    :alt: Latest PyPI version
 
-.. |version| image:: https://img.shields.io/pypi/v/pillow.svg
+.. |version| image:: https://img.shields.io/pypi/v/buttshock.svg
    :target: https://pypi.python.org/pypi/buttshock/
    :alt: Latest PyPI version
          
