@@ -77,10 +77,10 @@ Installation
 
 To install:
 
-.. code:: shell
+.. code:: bash
   pip install buttshock
 
-Available on PyPi at http://pypi.python.org/pypi/buttshock
+Package is also available on PyPi at http://pypi.python.org/pypi/buttshock
 
 Python Implementation Details
 -----------------------------
