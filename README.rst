@@ -77,8 +77,9 @@ Installation
 
 To install:
 
-.. code:: bash
-  pip install buttshock
+.. code:: shell
+
+    $ pip install buttshock --upgrade
 
 Package is also available on PyPi at http://pypi.python.org/pypi/buttshock
 
