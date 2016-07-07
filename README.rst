@@ -72,16 +72,25 @@ Some of the goals of this project include:
 - Reverse engineering the firmware (where possible)
 - Mapping the circuit boards and creating schematics
 
+Installation
+------------
+
+To install:
+
+.. code:: shell
+  pip install buttshock
+
+Available on PyPi at http://pypi.python.org/pypi/buttshock
+
 Python Implementation Details
 -----------------------------
 
 This is a python implementation of the RS-232 control protocol for the
 ErosTek ET-312 electrostimulation box.
 
-Documentation of the protocol is kept in the main documentation repo
-at:
+Documentation of the link cable, protocol, and other information is at:
 
-https://github.com/metafetish/buttshock-protocol-docs
+https://buttshock.com/doc/et312
 
 This library was developed and tested using a ET-312B running v1.6
 firmware. The ET-232 and 2B libraries are untested, but please let us
