@@ -1,6 +1,11 @@
 Versions
 ========
 
+0.2.1 (2016-07-07)
+------------------
+- More documentation and tests
+- Fix installation script error that generated incorrect wheel packages while cursing angrily at python community.
+
 0.2.0 (2016-07-05)
 ------------------
 

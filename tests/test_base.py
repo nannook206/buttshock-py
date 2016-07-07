@@ -2,6 +2,16 @@ import pytest
 from buttshock.errors import ButtshockIOError
 import buttshock.et312
 
+# TODO create box-only test for disconnecting and resyncing in the middle of a
+# message
+
+# TODO create box-only test decorator
+
+# TODO create emulator-only test decorator
+
+# TODO create both test decorator
+
+# TODO create box-only test for peeking before key exchange
 
 def test_emulator():
     with buttshock.et312.ET312EmulatorSync() as et312:
@@ -17,3 +27,4 @@ def test_missing_serial():
 def test_wrong_serial():
     with pytest.raises(ButtshockIOError):
         buttshock.et312.ET312SerialSync(1)
+

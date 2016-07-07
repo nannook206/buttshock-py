@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 import buttshock
 
@@ -13,7 +13,7 @@ setup(name='buttshock',
       url='http://github.com/metafetish/buttshock-py',
       download_url='http://pypi.python.org/packages/source/b/buttshock',
       license='BSD License',
-      packages=['buttshock'],
+      packages=find_packages(),
       keywords=['estim', 'buttshock', 'teledildonics', 'electrostim'],
       setup_requires=['pyserial', 'pytest-runner'],
       tests_require=['pytest'],
