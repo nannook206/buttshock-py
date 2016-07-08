@@ -3,4 +3,4 @@
 build
 cxdist
 dist
-doc/_build
+docs/_build
