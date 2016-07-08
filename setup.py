@@ -15,7 +15,7 @@ setup(name='buttshock',
       license='BSD License',
       packages=find_packages(),
       keywords=['estim', 'buttshock', 'teledildonics', 'electrostim'],
-      setup_requires=['pyserial', 'pytest-runner'],
+      install_requires=['pyserial'],
       tests_require=['pytest'],
       classifiers=[
           'Development Status :: 3 - Alpha',
