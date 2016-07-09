@@ -86,10 +86,8 @@ Package is also available on PyPi at http://pypi.python.org/pypi/buttshock
 Python Implementation Details
 -----------------------------
 
-This is a python implementation of the RS-232 control protocol for the
-ErosTek ET-312 electrostimulation box.
-
-Documentation of the link cable, protocol, and other information is at:
+Documentation of the link cable, protocol, and other information about
+the ET-312 protocol is available at:
 
 https://buttshock.com/doc/et312
 
@@ -101,8 +99,11 @@ Requirements
 ------------
 
 buttshock-py requires the pyserial library if you want to actually
-connect via serial. However, it can pass packets for each box over
-whatever medium you like.
+connect via serial. However, the library is built to abstract the raw
+box protocols from the communication medium, so it can pass packets for
+each box over whatever medium you like. For instance, you could create
+a network class that talks to a daemon that communicates with a serial
+port, if needed.
 
 Repo Contents
 -------------
@@ -111,6 +112,25 @@ This repo contains the following:
 
 - src - Source code for the library
 - examples - Example code that uses the library
+
+Development
+-----------
+
+buttshock-py uses the Tox library for test environment setup, test
+execution, documentation building, and pretty much anything else it
+does.
+
+To run project tests:
+
+.. code:: shell
+
+    $ tox --skip-missing-interpreters
+
+To create documentation:
+
+.. code:: shell
+
+    $ tox -e docs
 
 License
 -------
