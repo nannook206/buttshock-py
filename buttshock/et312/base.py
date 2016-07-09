@@ -185,3 +185,7 @@ class ET312Base(object):
     def __exit__(self, type, value, traceback):
         # Reset the key to zero as the last thing we do
         self.reset_key()
+
+    def get_current_mode(self):
+        """ Get the current mode/pattern the box is running. """
+        return self.read(0x407b)
