@@ -2,72 +2,66 @@ import pytest
 from buttshock.errors import ButtshockIOError
 import buttshock.et312
 import os
+from functools import wraps, partial
+
+###############################################################################
+# Tests Decorators
+###############################################################################
+
+# Modeled after http://stackoverflow.com/a/10288657/4040754, these descriptors
+# can take an optional kwarg that denotes whether or not an ET312 object should
+# be set up before the test is run. This cleans up the testing code if we are
+# running tests that expect clean connects/disconnects.
 
 
-no_setup = False
-et312 = None
-
-
-def run_box_test(func):
-    global et312
-    if et312 is not None:
-        pytest.fail("Global connection object not cleared before new test run!")
-    with buttshock.et312.ET312SerialSync(os.environ["BUTTSHOCK_SERIAL_PORT"]) as et:
-        et312 = et
+def run_test(func, no_setup):
+    if no_setup:
         func()
-    et312 = None
+        return
+    if "BUTTSHOCK_SERIAL_PORT" in os.environ.keys():
+        with buttshock.et312.ET312SerialSync(os.environ["BUTTSHOCK_SERIAL_PORT"]) as et:
+            func(et312=et)
+    else:
+        with buttshock.et312.ET312EmulatorSync() as et:
+            func(et312=et)
 
 
-def run_emulator_test(func):
-    global et312
-    with buttshock.et312.ET312EmulatorSync() as et:
-        et312 = et
-        func()
-    et312 = None
+def box_only(func=None, no_setup=False):
+    if not callable(func):
+        return partial(box_only, no_setup=no_setup)
 
-
-def no_setup(func):
-    def func_wrapper():
-        global no_setup
-        no_setup = True
-        func()
-        no_setup = False
-    return func_wrapper
-
-
-def box_only(func):
-    def func_wrapper():
-        global no_setup, et312
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         if "BUTTSHOCK_SERIAL_PORT" not in os.environ.keys():
             pytest.skip("Box only test, skipping.")
-        if not no_setup:
-            run_box_test(func)
-        else:
-            func()
-    return func_wrapper
+        run_test(func, no_setup)
+    return wrapper
 
 
-def emulator_only(func):
-    def func_wrapper():
-        global no_setup, et312
+def emulator_only(func=None, no_setup=False):
+    if not callable(func):
+        return partial(emulator_only, no_setup=no_setup)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         if "BUTTSHOCK_SERIAL_PORT" in os.environ.keys():
             pytest.skip("Emulator only test, skipping.")
-        if not no_setup:
-            run_emulator_test(func)
-        else:
-            func()
-    return func_wrapper
+        run_test(func, no_setup)
+    return wrapper
 
 
-def box_or_emulator(func):
-    def func_wrapper():
-        global no_setup, et312
-        if not no_setup:
-            if "BUTTSHOCK_SERIAL_PORT" in os.environ.keys():
-                run_box_test(func)
-            else:
-                run_emulator_test(func)
-    return func_wrapper
+def box_or_emulator(func=None, no_setup=False):
+    if not callable(func):
+        return partial(box_or_emulator, no_setup=no_setup)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        run_test(func, no_setup)
+    return wrapper
+
+###############################################################################
+# Tests
+###############################################################################
 
 # TODO create box-only test for disconnecting and resyncing in the middle of a
 # message
@@ -76,29 +70,27 @@ def box_or_emulator(func):
 
 
 @emulator_only
-def test_emulator():
+def test_emulator(et312=None):
     assert et312.key == (et312.port.emu.box_key ^ 0x55)
 
 
-@no_setup
-@box_or_emulator
+@box_or_emulator(no_setup=True)
 def test_missing_serial():
     import serial
     with pytest.raises(serial.serialutil.SerialException):
         buttshock.et312.ET312SerialSync("not-a-port")
 
 
-@no_setup
-@box_or_emulator
+@box_or_emulator(no_setup=True)
 def test_wrong_serial():
     with pytest.raises(ButtshockIOError):
         buttshock.et312.ET312SerialSync(1)
 
 
-@no_setup
-@box_only
+@box_only(no_setup=True)
 def test_box_reconnect():
     with buttshock.et312.ET312SerialSync(os.environ["BUTTSHOCK_SERIAL_PORT"]) as et:
         assert(et.get_current_mode() == 0)
     with buttshock.et312.ET312SerialSync(os.environ["BUTTSHOCK_SERIAL_PORT"]) as et:
         assert(et.get_current_mode() == 0)
+
