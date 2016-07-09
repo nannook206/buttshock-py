@@ -99,11 +99,13 @@ Requirements
 ------------
 
 buttshock-py requires the pyserial library if you want to actually
-connect via serial. However, the library is built to abstract the raw
-box protocols from the communication medium, so it can pass packets for
-each box over whatever medium you like. For instance, you could create
-a network class that talks to a daemon that communicates with a serial
-port, if needed.
+connect via serial. This dependency should be installed via setup.py.
+
+However, the library is built to abstract the raw box protocols from
+the communication medium, so it can pass packets for each box over
+whatever medium you like. For instance, you could create a network
+class that talks to a daemon that communicates with a serial port, if
+needed.
 
 Repo Contents
 -------------
@@ -117,8 +119,7 @@ Development
 -----------
 
 buttshock-py uses the Tox library for test environment setup, test
-execution, documentation building, and pretty much anything else it
-does.
+execution, documentation building, and other automated tasks.
 
 To run project tests:
 
