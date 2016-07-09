@@ -11,15 +11,13 @@ class ET312Emulator(object):
         self.wrong_checksum = False
         self.wrong_length_reply = False
         self.fail_handshake = False
-        self.box_key = random.randint(0, 255)
-        self.user_key = None
 
     def command(self, data):
         if len(data) == 0:
             raise RuntimeError
 
-        if self.user_key is not None:
-            data = [x ^ self.box_key ^ self.user_key ^ 0x55 for x in data]
+        if self.ram[0x213] != 0:
+            data = [x ^ self.ram[0x213] for x in data]
         # Handshake
         if data[0] == 0x0 and len(data) == 1:
             self.output_buffer.append(0x7)
@@ -27,11 +25,11 @@ class ET312Emulator(object):
 
         # Key Exchange
         if data[0] == 0x2f and len(data) == 3:
-            self.user_key = data[1]
-            packet = [0x21, self.box_key]
+            box_key = random.randint(0, 255)
+            packet = [0x21, box_key]
+            self.ram[0x213] = data[1] ^ box_key ^ 0x55
             self.output_buffer += packet
             self.output_buffer.append(sum(packet) % 0x100)
-            print(["{:#02x}".format(x) for x in self.output_buffer])
             return
 
         # Read Command
@@ -45,9 +43,15 @@ class ET312Emulator(object):
             if len(data) != write_size + 4:
                 raise RuntimeError("Incorrect write size! {} {}".format(len(data), write_size))
             write_location = (data[1] << 8) | (data[2])
-            # Reset key
-            if write_location == 0x4213 and data[3] == 0x0:
-                self.user_key = None
+            # RAM write
+            if write_location >= 0x4000 and write_location <= 0x8000:
+                location = (write_location - 0x4000)
+                if location > 1024:
+                    location = location % 1024
+                # TODO There has to be a more python way to do this but I'm
+                # tired.
+                for i in range(0, write_size):
+                    self.ram[location + i] = data[3 + i]
             self.output_buffer.append(0x6)
 
         # If we don't know what it is, neither will the box. Just do nothing.

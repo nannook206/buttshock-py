@@ -71,7 +71,9 @@ def box_or_emulator(func=None, no_setup=False):
 
 @emulator_only
 def test_emulator(et312=None):
-    assert et312.key == (et312.port.emu.box_key ^ 0x55)
+    # TODO I'm not sure if this test is right? I think emulator key setup may
+    # be wrong.
+    assert et312.key == (et312.port.emu.ram[0x213])
 
 
 @box_or_emulator(no_setup=True)
@@ -93,4 +95,33 @@ def test_box_reconnect():
         assert(et.get_current_mode() == 0)
     with buttshock.et312.ET312SerialSync(os.environ["BUTTSHOCK_SERIAL_PORT"]) as et:
         assert(et.get_current_mode() == 0)
+
+
+@box_or_emulator(no_setup=True)
+def test_missing_read_write():
+    class MissingRW(buttshock.et312.ET312Base):
+        pass
+    m = MissingRW()
+    with pytest.raises(RuntimeError):
+        m.read(0x0)
+    with pytest.raises(RuntimeError):
+        m.write(0x0, [0x0])
+
+
+@box_or_emulator
+def test_invalid_write_type(et312=None):
+    with pytest.raises(TypeError):
+        et312.write(0x0, 0x0)
+
+
+@box_or_emulator
+def test_invalid_write_length_min(et312=None):
+    with pytest.raises(ButtshockIOError):
+        et312.write(0x0, [])
+
+
+@box_or_emulator
+def test_invalid_write_length_max(et312=None):
+    with pytest.raises(ButtshockIOError):
+        et312.write(0x0, [0x0] * 9)
 

@@ -22,9 +22,8 @@ def main():
         print("Key is {0:#x} ({0})".format(et312.key, et312.key))
 
         # Get the current mode
-        for i in range(100):
-            mode = et312.read(0x407b)
-        print("Current box mode: {0:#x}".format(mode))
+        print("Current box key: {0:#x}".format(et312.read(0x4213)))
+        print("Current host key: {0:#x}".format(et312.read(0x4212)))
 
 if __name__ == "__main__":
     main()

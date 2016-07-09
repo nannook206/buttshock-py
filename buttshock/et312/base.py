@@ -87,7 +87,7 @@ class ET312Base(object):
         if type(data) is not list:
             raise TypeError("Must receive data as a list!")
         length = len(data)
-        if 0 > length or length > 8:
+        if length == 0 or length > 8:
             raise ButtshockIOError("Can only write between 1-8 bytes!")
         self._send_check([((0x3 + length) << 0x4) | 0xd, address >> 8,
                           address & 0xff] + data)
@@ -170,9 +170,6 @@ class ET312Base(object):
         baud_lh = self.read(ADDRS["BAUD_RATE_LOW"])
         baud_uh = self.read(ADDRS["BAUD_RATE_HIGH"])
         return ((baud_uh & 0xf) << 0x8) | baud_lh
-
-    def reset_box(self):
-        self.write(0x4070, [0x17])
 
     def reset_key(self):
         self.write(0x4213, [0x0])
