@@ -3,9 +3,9 @@ buttshock-py
 
 Python implementation of serial based control of the following devices:
 
-- Erostek ET-312 Electrostimulation Device
-- Erostek ET-232 Electrostimulation Device
-- Estim Systems 2B Electrostimulation Device
+- `Erostek ET-312B Electrostimulation Device <http://shop.erostek.com/products/ET312B-Power-Unit.html>`_
+- `Erostek ET-232 Electrostimulation Device <http://shop.erostek.com/products/ET232-Power-Unit.html>`_
+- `Estim Systems 2B Electrostimulation Device <http://store.e-stim.co.uk/index.php?main_page=product_info&products_id=17>`_
 
 .. start-badges
 
@@ -86,8 +86,8 @@ Package is also available on PyPi at http://pypi.python.org/pypi/buttshock
 Python Implementation Details
 -----------------------------
 
-Documentation of the link cable, protocol, and other information about
-the ET-312 protocol is available at:
+Documentation for serial link cable construction and more information
+about the ET-312B protocol is available at:
 
 https://buttshock.com/doc/et312
 
