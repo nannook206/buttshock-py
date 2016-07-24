@@ -18,7 +18,7 @@ default in etgame.py or add an option into the lua file.
 * The etgame.py script and shockcade.lua file and the buttshock-py
 library (which this came with)
 
-* Some linux box (Ubuntu, Fedora) with Python3 called python3. If your
+* Some linux box (Ubuntu, Fedora, Raspberry PI) with Python3 called python3. If your
 python3 isn't called python3 then alter that in the py file.
 
 * Mame and various mame roms like sf2.zip. Mame 0.171 won't work as it
@@ -49,3 +49,31 @@ You can make this work for other games too, like getting a shock when
 you get eaten by a ghost in pacman, or even as a a "new email"
 notifier, we look forward to seeing your patches!  Look at mamecheats
 for memory locations for lives and power levels for various games.
+
+Raspberry PI 3:
+
+Getting this all working on a Raspberry PI 3 is possible, but a bit
+of a hassle.  It is a hassle because all the mame emulators shipped
+with PI things like picade are not the mamedev version and therefore
+don't support LUA scripting.  However this works:
+
+* Install Rasbian.
+
+* You need a newer version of SDL2 which has PI3 optimizations.  So
+follow these instructions
+http://choccyhobnob.com/tutorials/compiling-mame-on-raspberry-pi/ for
+installing SDL2 and SDL2-ttf
+
+* You need Mame 0.171 or later. I used 0.174 already compiled to
+save time from the site above.
+
+* Run "mame -cc" to make a config file, then edit it. I selected
+"autoframeskip", decreased the sound mix to 11050, disabled
+video aliasing.
+
+* Run mame as above, in X.  Framebuffer video isn't fast enough.
+
+* If you're using a large display you still won't be able to run
+properly. I used the PI "hdmi_mode" setting in config.txt to select
+a 800x600 mode.
+
