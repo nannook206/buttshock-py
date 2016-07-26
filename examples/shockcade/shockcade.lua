@@ -12,6 +12,30 @@ local function shock(channel,action)
     p = io.popen("python3 etgame.py "..channel.." "..action)
 end
 
+--[[ ATETRISA: 0649 contains current line count for player 1, 064a for player 2
+--]]
+
+local function checktetris()
+         local powera = mem:read_i8(0x649)
+         if (powera ~= oldpowera) then
+            if (powera > oldpowera) then
+               shock("-c b","-r 250")        -- A got a line, shock B
+               oldpowera = oldpowera +1
+            else
+               oldpowera = powera
+            end
+         end
+         local powerb = mem:read_i8(0x64a)
+         if (powerb ~= oldpowerb) then
+            if (powerb > oldpowerb) then
+               shock("-c a","-r 250")        -- B got a line, shock A
+               oldpowerb = oldpowerb + 1
+            else
+               oldpowerb = powerb
+            end
+         end
+end
+
 --[[ SF2: ff83f0 an ff86f0 are words container current power bar level of sf2
      0 = not in a game.  144 = max.  Then it drops as you get hit, never
      to 0, -1 when KO'd
@@ -48,6 +72,8 @@ end
 shock("","-l 0")
 if (game == "sf2") then
    emu.sethook(checksf2power,"frame")
+elseif (game == "atetrisa") then
+   emu.sethook(checktetris,"frame")   
 else
    print("No shocks for this game")
 end
