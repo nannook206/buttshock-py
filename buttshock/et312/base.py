@@ -139,6 +139,13 @@ class ET312Base(object):
         #
         # chosen by fair dice roll (oh fuck it no one cares about your xkcd
         # joke it's just 0)
+        #
+        # IF YOU FOR SOME REASON MAKE THIS NOT ZERO, FLIP THE NIBBLES WHEN
+        # CREATING THE FINAL KEY.
+        #
+        # This means if you send 0xab as the host key, you'll need to create
+        # the final key below with 0x55 ^ 0xba ^ [box key].
+        #
         self._send_check([0x2f, 0x00])
         key_info = self._receive_check(3)
         if key_info[0] != 0x21:
