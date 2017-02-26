@@ -54,7 +54,7 @@ def main():
 
         print("ADC0 (current sense)\t\t: {0:#x}".format(et312.read(0x4060)))
         print("ADC1 (MA knob)\t\t\t: {0:#x}".format(et312.read(0x4061)))
-        print("\tMA scaled value\t\t: {0:#x}".format(et312.read(0x420d)))        
+        print("\tMA scaled value\t\t: %d (mode range %d-%d)" %(et312.read(0x420d),et312.read(0x4086),et312.read(0x4087)))
         print("ADC2 (PSU voltage)\t\t: {0:#x}".format(et312.read(0x4062)))
         print("ADC3 (Battery voltage)\t\t: {0:#x}".format(et312.read(0x4063)))
         print("\tBattery at boot\t\t: {0:.1f}%".format((et312.read(0x4203))*100/256))
