@@ -19,6 +19,7 @@ def main():
              0x7c:"Audio1",0x7d:"Audio2", 0x7e:"Audio3", 0x80:"Random1", 0x81:"Random2", 0x82:"Toggle",
              0x83:"Orgasm",0x84:"Torment",0x85:"Phase1",0x86:"Phase2",0x87:"Phase3",
              0x88:"User1",0x89:"User2",0x8a:"User3",0x8b:"User4",0x8c:"User5",0:"None", 0x7f:"Split"}
+    powerlevels = {1:"Low (1)",2:"Normal (2)",3:"High (3)"}
 
     parser = argparse.ArgumentParser()
 
@@ -61,6 +62,18 @@ def main():
         print("ADC4 (Level A knob)\t\t: {0:#x}".format(et312.read(0x4064)))
         print("ADC5 (Level B knob)\t\t: {0:#x}".format(et312.read(0x4065)))
         currentmode =et312.read(0x407b)
+        print("Power Level\t\t\t: "+powerlevels[et312.read(0x41f4)])
+        usermodes = et312.read(0x41f3)-0x87
+        print("User programs loaded\t\t: {0:#d}".format(usermodes))
+        for i in range (0,usermodes):
+            startmodule = et312.read(0x8018+i)
+            if (startmodule < 0xa0):
+                programlookup = et312.read(0x8000+startmodule-0x60)
+                programblockstart = 0x8040+programlookup
+            else:
+                programlookup = et312.read(0x8000+startmodule-0xa0)
+                programblockstart = 0x8100+programlookup
+            print("\tUser %d is module 0x%02x\t: 0x%04x (eeprom)"%(i+1,startmodule,programblockstart))
         print("Current Mode\t\t\t: "+modes[currentmode])
         if (currentmode == 0x7f):
             print("\tSplit Mode A\t\t: "+modes[et312.read(0x41f5)])
@@ -72,7 +85,8 @@ def main():
                 timeleft+=256
             print("\tTime until change mode\t: {0:#d} seconds ".format(int(timeleft/1.91)))
         print("\tMode has been running\t: {0:#d} seconds".format(int((et312.read(0x4089)+et312.read(0x408a)*256)*1.048)))
-        
+
+            
     except Exception as e:
         print(e)
 
